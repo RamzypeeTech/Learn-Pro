@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Announcements | Learn Pro{% endblock %}
+{% block content %}
+<div class="page-heading"><div><span class="breadcrumb">Communication</span><h1>Announcements</h1><p>Important school updates, presented as clear text-first blog posts.</p></div></div>
+{% if messages %}{% for message in messages %}<div class="message-success">{{ message }}</div>{% endfor %}{% endif %}
+<div class="announcement-layout">
+  <section class="panel record-form"><h2>Publish an announcement</h2><p>Everyone in the school workspace receives a notification when you post.</p><form method="post">{% csrf_token %}{% for field in form %}<div class="auth-field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% for error in field.errors %}<small class="auth-help auth-help-error">{{ error }}</small>{% endfor %}</div>{% endfor %}<button class="btn-primary" type="submit"><i class="fa-solid fa-paper-plane"></i> Publish post</button></form></section>
+  <section class="announcement-feed">{% for post in announcements %}<article class="announcement-post panel">{% if post.is_pinned %}<span class="post-tag"><i class="fa-solid fa-thumbtack"></i> Pinned</span>{% endif %}<h2>{{ post.title }}</h2><p class="post-meta">Posted {{ post.created_at|date:'F j, Y · H:i' }} by {{ post.created_by.get_full_name|default:post.created_by.username }}</p><div class="post-body">{{ post.body|linebreaks }}</div></article>{% empty %}<section class="panel empty-notice"><i class="fa-solid fa-bullhorn"></i><h2>No announcements yet</h2><p>Your published school updates will appear here.</p></section>{% endfor %}</section>
+</div>
+{% endblock %}

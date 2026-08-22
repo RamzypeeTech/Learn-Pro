@@ -1,0 +1,401 @@
+{% extends 'base.html' %}
+{% block title %}
+  {{ title }} | Learn Pro
+{% endblock %}
+{% block content %}
+  <div class="page-heading">
+    <div>
+      <span class="breadcrumb">School records</span><h1>{{ title }}</h1><p>{{ intro }}</p>
+    </div>
+  </div>
+  {% if messages %}{% for message in messages %}
+    <div class="message-success">{{ message }}</div>
+  {% endfor %}{% endif %}
+  {% if kind == 'finance' %}
+    <div class="finance-cards record-finance-cards">
+      <div class="finance-card income">
+        <span>Recorded income</span><b>₦{{ income }}</b><small>All income transactions</small>
+      </div>
+      <div class="finance-card expense">
+        <span>Recorded expenses</span><b>₦{{ expenses }}</b><small>All expense transactions</small>
+      </div>
+      <div class="finance-card balance">
+        <span>Net cash flow</span><b>₦{{ net_balance }}</b><small>Income less expenses</small>
+      </div>
+    </div>
+  {% endif %}
+  <div class="record-layout {% if not can_create %}record-layout-readonly{% endif %}">
+    {% if can_create %}
+    <section class="panel record-form">
+      <h2>{% if editing_record %}Edit {{ title|slice:':-1' }}{% else %}{{ action }}{% endif %}</h2><p>Fields marked by the form are required.</p>
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="auth-field">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<small class="auth-help">{{ field.help_text }}</small>{% endif %}{% for error in field.errors %}
+              <small class="auth-help auth-help-error">{{ error }}</small>
+            {% endfor %}
+          </div>
+        {% endfor %}<button class="btn-primary" type="submit"><i class="fa-solid {% if editing_record %}fa-floppy-disk{% else %}fa-plus{% endif %}"></i> {% if editing_record %}Save changes{% else %}{{ action }}{% endif %}</button>
+      </form>
+    </section>
+    {% endif %}
+    <section class="panel table-panel">
+      <div class="panel-header">
+        <div>
+          <h2>Recorded {{ title|lower }}</h2><p>{{ records|length }} record{{ records|length|pluralize }}</p>
+        </div>
+        {% if kind == 'events' %}
+          <a class="btn-light" href="{% url 'results' %}">Record results</a>
+        {% endif %}
+      </div>
+      <div class="table-wrap">
+        <table>
+          {% if kind == 'years' %}
+            <thead>
+              <tr>
+                <th>Academic year</th>
+                <th>Start date</th>
+                <th>End date</th>
+                <th>Terms</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for record in records %}
+                <tr>
+                  <td>
+                    <b>{{ record.name }}</b>
+                  </td>
+                  <td>{{ record.start_date }}</td>
+                  <td>{{ record.end_date }}</td>
+                  <td>{{ record.terms }}</td>
+                  <td>
+                    <span class="status {% if record.is_active %}
+                        active-status
+                      {% else %}
+                        neutral-status
+                      {% endif %}">
+                      {% if record.is_active %}
+                        Active
+                      {% else %}
+                        Archived
+                      {% endif %}
+                    </span>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="5" class="empty-cell">No academic years recorded yet.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          {% elif kind == 'classes' %}
+            <thead>
+              <tr>
+                <th>Class</th>
+                <th>Section</th>
+                <th>Academic year</th>
+                <th>Students</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for record in records %}
+                <tr>
+                  <td>
+                    <b>{{ record.name }}</b>
+                  </td>
+                  <td>{{ record.section|default:'—' }}</td>
+                  <td>{{ record.academic_year }}</td>
+                  <td>{{ record.students.count }}</td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="4" class="empty-cell">No classes recorded yet.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          {% elif kind == 'teachers' %}
+            <thead>
+              <tr>
+                <th>Teacher</th>
+                <th>Employee ID</th>
+                <th>Department</th>
+                <th>Profile</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for record in records %}
+                <tr>
+                  <td><span class="person-cell">{% if record.profile_photo %}<img src="{{ record.profile_photo.url }}" alt="{{ record.full_name }}">{% else %}<span class="person-placeholder">{{ record.full_name|slice:':1'|upper }}</span>{% endif %}<b>{{ record.full_name }}</b></span></td>
+                  <td>{{ record.employee_id }}</td>
+                  <td>{{ record.department|default:'—' }}</td>
+                  <td><a class="btn-light btn-compact" href="{% url 'teacher_details' record.pk %}">View profile</a></td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="4" class="empty-cell">No teachers recorded yet.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          {% elif kind == 'students' %}
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Student ID</th>
+                <th>Class</th>
+                <th>Enrolled</th>
+                <th>Profile</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for record in records %}
+                <tr>
+                  <td><span class="person-cell">{% if record.profile_photo %}<img src="{{ record.profile_photo.url }}" alt="{{ record.full_name }}">{% else %}<span class="person-placeholder">{{ record.full_name|slice:':1'|upper }}</span>{% endif %}<b>{{ record.full_name }}</b></span></td>
+                  <td>{{ record.student_id }}</td>
+                  <td>{{ record.school_class }}</td>
+                  <td>{{ record.enrollment_date }}</td>
+                  <td><a class="btn-light btn-compact" href="{% url 'student_details' record.pk %}">View profile</a></td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="5" class="empty-cell">No students enrolled yet.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          {% elif kind == 'subjects' %}
+            <thead>
+              <tr>
+                <th>Subject</th>
+                <th>Code</th>
+                <th>Class</th>
+                <th>Teacher</th>
+                <th>Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for record in records %}
+                <tr>
+                  <td>
+                    <b>{{ record.name }}</b>
+                  </td>
+                  <td>{{ record.code }}</td>
+                  <td>{{ record.school_class|default:'—' }}</td>
+                  <td>{{ record.teacher|default:'—' }}</td>
+                  <td>{{ record.get_subject_type_display }}</td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="5" class="empty-cell">No subjects recorded yet.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          {% elif kind == 'assignments' %}
+            <thead>
+              <tr>
+                <th>Assignment</th>
+                <th>Subject</th>
+                <th>Class</th>
+                <th>Due date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for record in records %}
+                <tr>
+                  <td>
+                    <b>{{ record.title }}</b>
+                  </td>
+                  <td>{{ record.subject }}</td>
+                  <td>{{ record.school_class|default:'—' }}</td>
+                  <td>{{ record.due_date }}</td>
+                  <td>
+                    <span class="status {% if record.status == 'open' %}
+                        active-status
+                      {% else %}
+                        neutral-status
+                      {% endif %}">
+                      {{ record.get_status_display }}
+                    </span>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="5" class="empty-cell">No assignments recorded yet.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          {% elif kind == 'attendance' %}
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Class</th>
+                <th>Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for record in records %}
+                <tr>
+                  <td>
+                    <b>{{ record.student }}</b>
+                  </td>
+                  <td>{{ record.student.school_class }}</td>
+                  <td>{{ record.attendance_date }}</td>
+                  <td>
+                    <span class="status {% if record.status == 'absent' %}
+                        danger-status
+                      {% elif record.status == 'late' %}
+                        warning-status
+                      {% else %}
+                        active-status
+                      {% endif %}">
+                      {{ record.get_status_display }}
+                    </span>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="4" class="empty-cell">No attendance recorded yet.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          {% elif kind == 'fees' %}
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Invoice</th>
+                <th>Due</th>
+                <th>Paid</th>
+                <th>Balance</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for record in records %}
+                <tr>
+                  <td>
+                    <b>{{ record.student }}</b>
+                  </td>
+                  <td>{{ record.invoice_number }}</td>
+                  <td>₦{{ record.amount_due }}</td>
+                  <td>₦{{ record.amount_paid }}</td>
+                  <td>
+                    <b>₦{{ record.balance }}</b>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="5" class="empty-cell">No fee records yet.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          {% elif kind == 'events' %}
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th>Type</th>
+                <th>Class</th>
+                <th>Scheduled for</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for record in records %}
+                <tr>
+                  <td>
+                    <b>{{ record.title }}</b>
+                  </td>
+                  <td>{{ record.event_type }}</td>
+                  <td>{{ record.school_class|default:'Whole school' }}</td>
+                  <td>{{ record.scheduled_for }}</td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="4" class="empty-cell">No upcoming events scheduled yet.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          {% elif kind == 'finance' %}
+            <thead>
+              <tr>
+                <th>Transaction</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Note</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for record in records %}
+                <tr>
+                  <td>
+                    <b>{{ record.name }}</b>
+                  </td>
+                  <td>{{ record.transaction_date }}</td>
+                  <td>
+                    <span class="status {% if record.transaction_type == 'income' %}
+                        active-status
+                      {% else %}
+                        danger-status
+                      {% endif %}">
+                      {{ record.get_transaction_type_display }}
+                    </span>
+                  </td>
+                  <td class="{% if record.transaction_type == 'income' %}
+                      positive
+                    {% else %}
+                      negative
+                    {% endif %}">
+                    {% if record.transaction_type == 'income' %}
+                      +
+                    {% else %}
+                      −
+                    {% endif %}₦{{ record.amount }}
+                  </td>
+                  <td>{{ record.note|default:'—' }}</td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="5" class="empty-cell">No transactions recorded yet.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          {% else %}
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Subject</th>
+                <th>Assessment</th>
+                <th>1st term</th>
+                <th>2nd term</th>
+                <th>3rd term</th>
+                <th>Final score</th>
+                <th>Teacher's remark</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for record in records %}
+                <tr>
+                  <td>
+                    <b>{{ record.student }}</b>
+                  </td>
+                  <td>{{ record.subject }}</td>
+                  <td>{{ record.assessment_name }}</td>
+                  <td>{% if record.first_term_score is not None %}{{ record.first_term_score }}%{% else %}—{% endif %}</td>
+                  <td>{% if record.second_term_score is not None %}{{ record.second_term_score }}%{% else %}—{% endif %}</td>
+                  <td>{% if record.third_term_score is not None %}{{ record.third_term_score }}%{% else %}—{% endif %}</td>
+                  <td><b>{% if record.final_score is not None %}{{ record.final_score|floatformat:2 }}%{% else %}—{% endif %}</b></td>
+                  <td>{{ record.teacher_remark|default:'—' }}</td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="8" class="empty-cell">No results recorded yet.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          {% endif %}
+        </table>
+      </div>
+    </section>
+  </div>
+{% endblock %}
+

@@ -1,0 +1,7 @@
+<details class="record-actions">
+  <summary aria-label="Record actions"><i class="fa-solid fa-ellipsis-vertical"></i></summary>
+  <div class="record-actions-menu">
+    <a href="?edit={{ record.pk }}"><i class="fa-solid fa-pen"></i> Edit</a>
+    <form method="post" onsubmit="return confirm('Delete this record? This cannot be undone.');">{% csrf_token %}<input type="hidden" name="delete" value="{{ record.pk }}"><button type="submit"><i class="fa-solid fa-trash-can"></i> Delete</button></form>
+  </div>
+</details>

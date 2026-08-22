@@ -1,0 +1,310 @@
+{% extends 'base.html' %}
+{% block title %}
+  {{ title }} · Learn Pro
+{% endblock %}
+{% block content %}
+  <div class="page-heading">
+    <div>
+      <span class="breadcrumb">{{ section }}</span><h1>{{ title }}</h1><p>{{ intro }}</p>
+    </div><button class="btn-primary"><i class="fa-solid fa-plus"></i> {{ action }}</button>
+  </div>
+  {% if page == 'years' %}
+    <div class="stats-row">
+      <div class="mini-stat">
+        <i class="fa-regular fa-calendar"></i><span><b>3</b> Academic years</span>
+      </div>
+      <div class="mini-stat success">
+        <i class="fa-solid fa-circle-check"></i><span><b>1</b> Active year</span>
+      </div>
+    </div>
+    <div class="panel table-panel">
+      <div class="panel-header">
+        <div>
+          <h2>School sessions</h2><p>Set one year as the active session.</p>
+        </div><button class="btn-light">Filter</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Academic year</th>
+              <th>Start date</th>
+              <th>End date</th>
+              <th>Terms</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <b>2026–2027</b><small>Current school session</small>
+              </td>
+              <td>Sep 08, 2026</td>
+              <td>Jul 16, 2027</td>
+              <td>3 terms</td>
+              <td>
+                <span class="status active-status">Active</span>
+              </td>
+              <td>•••</td>
+            </tr>
+            <tr>
+              <td>
+                <b>2025–2026</b>
+              </td>
+              <td>Sep 09, 2025</td>
+              <td>Jul 17, 2026</td>
+              <td>3 terms</td>
+              <td>
+                <span class="status neutral-status">Completed</span>
+              </td>
+              <td>•••</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% elif page == 'classes' %}
+    <div class="class-grid">
+      {% for item in items %}
+        <article class="class-card">
+          <span class="class-icon"><i class="fa-solid fa-book-open"></i></span><span class="status active-status">Active</span><h2>{{ item.name }}</h2><p>{{ item.detail }}</p>
+          <div class="class-meta">
+            <span><i class="fa-solid fa-users"></i> {{ item.count }} students</span><span><i class="fa-solid fa-user"></i> {{ item.teacher }}</span>
+          </div><a href="#">View class <i class="fa-solid fa-arrow-right"></i></a>
+        </article>
+      {% endfor %}
+    </div>
+  {% elif page == 'attendance' %}
+    <div class="stats-row">
+      <div class="mini-stat success">
+        <i class="fa-solid fa-user-check"></i><span><b>91.7%</b> Present today</span>
+      </div>
+      <div class="mini-stat danger">
+        <i class="fa-solid fa-user-xmark"></i><span><b>3</b> Absent today</span>
+      </div>
+      <div class="mini-stat">
+        <i class="fa-solid fa-clock"></i><span><b>2</b> Late arrivals</span>
+      </div>
+    </div>
+    <div class="panel filters">
+      <div class="filter-fields">
+        <label>Date<input type="date" value="2026-08-21" /></label><label>
+          Class<select>
+            <option>Grade 10 – A</option>
+          </select>
+        </label>
+      </div><button class="btn-primary">Take attendance</button>
+    </div>
+    <div class="panel table-panel">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Student ID</th>
+              <th>Class</th>
+              <th>Check-in</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in items %}
+              <tr>
+                <td>
+                  <b>{{ item.name }}</b>
+                </td>
+                <td>{{ item.id }}</td>
+                <td>Grade 10 – A</td>
+                <td>{{ item.time }}</td>
+                <td>
+                  <span class="status {{ item.status_class }}">{{ item.status }}</span>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% elif page == 'exams' %}
+    <div class="stats-row">
+      <div class="mini-stat">
+        <i class="fa-solid fa-clipboard-list"></i><span><b>4</b> Scheduled exams</span>
+      </div>
+      <div class="mini-stat success">
+        <i class="fa-solid fa-chart-line"></i><span><b>86%</b> Average pass rate</span>
+      </div>
+    </div>
+    <div class="panel table-panel">
+      <div class="panel-header">
+        <div>
+          <h2>Upcoming examinations</h2><p>Create examinations and publish results from one place.</p>
+        </div><button class="btn-light">View results</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Exam</th>
+              <th>Class</th>
+              <th>Subject</th>
+              <th>Date</th>
+              <th>Marks</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in items %}
+              <tr>
+                <td>
+                  <b>{{ item.name }}</b>
+                </td>
+                <td>{{ item.class }}</td>
+                <td>{{ item.subject }}</td>
+                <td>{{ item.date }}</td>
+                <td>{{ item.marks }}</td>
+                <td>
+                  <span class="status {{ item.status_class }}">{{ item.status }}</span>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% elif page == 'assignments' %}
+    <div class="assignment-grid">
+      {% for item in items %}
+        <article class="assignment-card">
+          <div class="card-top">
+            <span class="subject-tag">{{ item.subject }}</span><span class="status {{ item.status_class }}">{{ item.status }}</span>
+          </div><h2>{{ item.name }}</h2><p>{{ item.class }} · Due {{ item.due }}</p>
+          <div class="assignment-progress">
+            <span>{{ item.submitted }} submitted</span><div>
+              <i style="width:{{ item.percent }}%"></i>
+            </div>
+          </div><a href="#">Review submissions <i class="fa-solid fa-arrow-right"></i></a>
+        </article>
+      {% endfor %}
+    </div>
+  {% elif page == 'fees' %}
+    <div class="stats-row">
+      <div class="mini-stat success">
+        <i class="fa-solid fa-wallet"></i><span><b>₦1,240,000</b> Collected</span>
+      </div>
+      <div class="mini-stat danger">
+        <i class="fa-solid fa-triangle-exclamation"></i><span><b>₦185,000</b> Outstanding</span>
+      </div>
+    </div>
+    <div class="panel table-panel">
+      <div class="panel-header">
+        <div>
+          <h2>Recent fee records</h2><p>Monitor payments and follow up on balances.</p>
+        </div><button class="btn-light">Export</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Invoice</th>
+              <th>Amount</th>
+              <th>Paid</th>
+              <th>Balance</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in items %}
+              <tr>
+                <td>
+                  <b>{{ item.name }}</b><small>{{ item.class }}</small>
+                </td>
+                <td>{{ item.invoice }}</td>
+                <td>₦{{ item.amount }}</td>
+                <td>₦{{ item.paid }}</td>
+                <td>₦{{ item.balance }}</td>
+                <td>
+                  <span class="status {{ item.status_class }}">{{ item.status }}</span>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% elif page == 'finance' %}
+    <div class="finance-cards">
+      <div class="finance-card income">
+        <span>Income this month</span><b>₦1,240,000</b><small><i class="fa-solid fa-arrow-trend-up"></i> 12.5% from last month</small>
+      </div>
+      <div class="finance-card expense">
+        <span>Expenses this month</span><b>₦482,500</b><small><i class="fa-solid fa-arrow-trend-down"></i> 6.2% from last month</small>
+      </div>
+      <div class="finance-card balance">
+        <span>Net balance</span><b>₦757,500</b><small>Available operating balance</small>
+      </div>
+    </div>
+    <div class="content-grid finance-grid">
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Cash flow</h2><p>Income versus expenses</p>
+          </div>
+        </div>
+        <div class="chart-bars">
+          <i style="height:40%"></i><i style="height:50%"></i><i style="height:70%"></i>
+          <i style="height:80%"></i><i style="height:90%"></i><i style="height:50%"></i>
+          <i style="height:60%"></i>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Recent transactions</h2><p>Latest recorded entries</p>
+          </div>
+        </div>
+        <ul class="transactions">
+          {% for item in items %}
+            <li>
+              <span class="transaction-icon"><i class="fa-solid {{ item.icon }}"></i></span><span><b>{{ item.name }}</b><small>{{ item.date }}</small></span><strong class="{{ item.kind }}">{{ item.amount }}</strong>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  {% else %}
+    <div class="toolbar">
+      <div class="search-filter">
+        <i class="fa-solid fa-magnifying-glass"></i><input placeholder="Search {{ title|lower }}" />
+      </div><button class="btn-light">All classes <i class="fa-solid fa-chevron-down"></i></button>
+    </div>
+    <div class="panel table-panel">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              {% for heading in headings %}
+                <th>{{ heading }}</th>
+              {% endfor %}
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in items %}
+              <tr>
+                {% for value in item %}
+                  <td>{{ value }}</td>
+                {% endfor %}
+                <td>
+                  <button class="row-action"><i class="fa-solid fa-ellipsis"></i></button>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
+

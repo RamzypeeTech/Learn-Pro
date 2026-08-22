@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" /><title>
+      {% block title %}
+        Learn Pro
+      {% endblock %}
+    </title><link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}" />
+    <link rel="stylesheet" href="{% static 'style.css' %}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  </head>
+  <body>
+    <div class="site-loader" aria-hidden="true"><img src="{% static 'img/preloader.gif' %}" alt=""><span>Loading Learn Pro</span></div>
+    <div class="app-container">
+      <aside class="sidebar" id="primary-navigation">
+        <a class="brand" href="{% url 'index' %}"><span class="logo-box">LP</span><span class="brand-name">Learn Pro</span></a><span class="sidebar-section-title">SCHOOL MANAGEMENT</span><nav class="nav-menu">
+          {% for item in navigation_items %}
+            <a href="{% url item.url_name %}" class="nav-item {% if active == item.active %}active{% endif %}"><span class="badge">{{ item.badge }}</span><span class="label">{{ item.label }}</span></a>
+          {% endfor %}
+        </nav>
+        <div class="sidebar-footer">
+          <a class="user-avatar" href="{% url 'my_profile' %}" aria-label="Open my profile">{% if header_photo %}<img src="{{ header_photo.url }}" alt="">{% else %}{{ request.user.username|slice:':2'|upper }}{% endif %}</a>
+          <div class="user-info">
+            <b>Ramzy pee</b><small>Super Admin</small>
+          </div>
+        </div>
+      </aside>
+      <div class="sidebar-backdrop" aria-hidden="true"></div>
+      <main class="main-content">
+        <header class="top-header">
+          <button class="menu-toggle" type="button" aria-label="Open navigation" aria-controls="primary-navigation" aria-expanded="false"><i class="fa-solid fa-bars"></i></button>
+          <form class="search-box" action="{% url 'search' %}" method="get">
+            <i class="fa-solid fa-magnifying-glass"></i><input name="q" value="{{ request.GET.q }}" placeholder="Search names, IDs, subjects" aria-label="Search records" />
+          </form>
+          <div class="header-actions">
+            <form class="dropdown-group" method="post" action="{% url 'set_academic_year' %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.path }}">
+              <span class="dropdown-label academic-year-label">Academic Year</span><select class="select-input" name="academic_year" aria-label="Academic year" onchange="this.form.submit()">
+                <option {% if selected_academic_year == '2026-27' %}selected{% endif %}>2026-27</option>
+                <option>2025-26</option>
+                <option>2024-25</option>
+                <option>2023-24</option>
+                <option>2022-23</option>
+                <option>2021-22</option>
+              </select>
+            </form>
+            {% if request.user.is_authenticated %}
+              <a class="notification-link" href="{% url 'notifications' %}" aria-label="Open notifications"><i class="fa-solid fa-bell"></i>{% if unread_notification_count %}<b>{{ unread_notification_count }}</b>{% endif %}</a>
+              <a class="header-profile" href="{% url 'my_profile' %}" aria-label="Open my profile">{% if header_photo %}<img src="{{ header_photo.url }}" alt="">{% endif %}<span>{{ request.user.get_full_name|default:request.user.username }}</span></a>
+              <a class="btn-primary header-action-button" href="{% url 'change_password' %}">Change Password</a>
+              <form method="post" action="{% url 'sign_out' %}" class="inline-form">
+                {% csrf_token %}<button class="btn-primary header-action-button" type="submit">Sign out</button>
+              </form>
+            {% else %}
+              <a class="btn-text" href="{% url 'sign_in' %}">Sign in</a>
+            {% endif %}
+          </div>
+        </header>
+        <section class="page-body">
+          {% block content %}
+
+          {% endblock %}
+        </section>
+      </main>
+    </div>
+    <script>
+      const menuButton = document.querySelector('.menu-toggle');
+      const sidebar = document.querySelector('.sidebar');
+      const backdrop = document.querySelector('.sidebar-backdrop');
+      const closeNavigation = () => { sidebar?.classList.remove('is-open'); backdrop?.classList.remove('is-visible'); menuButton?.setAttribute('aria-expanded', 'false'); };
+      menuButton?.addEventListener('click', function () {
+        const isOpen = sidebar.classList.toggle('is-open');
+        backdrop?.classList.toggle('is-visible', isOpen);
+        this.setAttribute('aria-expanded', isOpen);
+      });
+      backdrop?.addEventListener('click', closeNavigation);
+      window.addEventListener('resize', () => { if (window.innerWidth > 900) closeNavigation(); });
+      window.addEventListener('load', () => document.body.classList.add('is-loaded'));
+    </script>
+  </body>
+</html>
+

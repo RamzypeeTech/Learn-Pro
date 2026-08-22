@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block title %}Restricted | Learn Pro{% endblock %}
+{% block content %}
+<section class="panel access-denied"><i class="fa-solid fa-lock"></i><h1>{{ title }} is restricted</h1><p>Your account type does not have access to this module. Open your dashboard for the records assigned to you.</p><a class="btn-primary" href="{% url 'index' %}">Go to my dashboard</a></section>
+{% endblock %}
+

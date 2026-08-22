@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in | Learn Pro</title><link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body class="auth-page">
+  <main class="auth-card">
+    <div class="auth-brand"><span class="logo-box">SP</span><span class="brand-name" style="color:#0f172a">Learn Pro</span></div>
+    <h1>Welcome back</h1><p>Sign in to access your school management workspace.</p>
+    {% if messages %}{% for message in messages %}<div class="message-success">{{ message }}</div>{% endfor %}{% endif %}
+    {% if form.non_field_errors %}<div class="auth-errors">{% for error in form.non_field_errors %}{{ error }}{% endfor %}</div>{% endif %}
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.GET.next }}">
+      <div class="auth-field"><label for="id_username">Username</label><input id="id_username" name="username" type="text" value="{{ form.username.value|default:'' }}" autocomplete="username" required autofocus></div>
+      <div class="auth-field"><label for="id_password">Password</label><input id="id_password" name="password" type="password" autocomplete="current-password" required></div>
+      <label class="auth-check"><input type="checkbox" name="remember_me" {% if request.POST.remember_me %}checked{% endif %}> <span>Remember me on this device</span></label>
+      <label class="auth-check"><input type="checkbox" name="accept_terms" {% if request.POST.accept_terms %}checked{% endif %} required> <span>I agree to continue with the <a href="#terms">Terms and Conditions</a>.</span></label>
+      <button class="btn-primary auth-submit" type="submit">Sign in</button>
+    </form>
+    <p class="auth-switch">New to Learn Pro? <a href="{% url 'create_account' %}">Create an account</a></p>
+  </main>
+</body>
+</html>
+

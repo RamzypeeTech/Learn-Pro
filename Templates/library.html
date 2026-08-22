@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Library | Learn Pro{% endblock %}
+{% block content %}
+<div class="page-heading"><div><span class="breadcrumb">School library</span><h1>Book catalogue</h1><p>Add books with clear specifications and let users open them from the library.</p></div></div>
+{% if messages %}{% for message in messages %}<div class="message-success">{{ message }}</div>{% endfor %}{% endif %}
+<div class="record-layout library-layout {% if not can_add_books %}library-reader-layout{% endif %}">
+  {% if can_add_books %}
+  <section class="panel record-form"><h2>Add a book</h2><p>Provide the title, author, category, publication details, cover, and a readable PDF or EPUB file.</p><form method="post" enctype="multipart/form-data">{% csrf_token %}{% for field in form %}<div class="auth-field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<small class="auth-help">{{ field.help_text }}</small>{% endif %}{% for error in field.errors %}<small class="auth-help auth-help-error">{{ error }}</small>{% endfor %}</div>{% endfor %}<button class="btn-primary" type="submit"><i class="fa-solid fa-book-medical"></i> Add book</button></form></section>
+  {% endif %}
+  <section><div class="library-grid">{% for book in books %}<article class="book-card">{% if book.cover_image %}<img class="book-cover" src="{{ book.cover_image.url }}" alt="{{ book.title }} cover">{% else %}<div class="book-cover book-cover-placeholder"><i class="fa-solid fa-book-open"></i></div>{% endif %}<div class="book-card-content"><span class="subject-tag">{{ book.category }}</span><h2>{{ book.title }}</h2><p>by {{ book.author }}</p>{% if book.publication_year %}<small>{{ book.publication_year }}{% if book.isbn %} · ISBN {{ book.isbn }}{% endif %}</small>{% endif %}<a class="btn-primary" href="{% url 'read_book' book.pk %}"><i class="fa-solid fa-book-open-reader"></i> Read book</a></div></article>{% empty %}<div class="panel empty-search">No books in the catalogue yet. Add the first one using the form.</div>{% endfor %}</div></section>
+</div>
+{% endblock %}
+

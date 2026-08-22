@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block title %}Read {{ book.title }} | Learn Pro{% endblock %}
+{% block content %}
+<div class="page-heading"><div><span class="breadcrumb">Library</span><h1>{{ book.title }}</h1><p>{{ book.author }} · {{ book.category }}</p></div><a class="btn-light" href="{% url 'library' %}"><i class="fa-solid fa-arrow-left"></i> Back to library</a></div>
+<section class="reader-panel panel"><div class="reader-heading"><div><h2>Reading view</h2><p>{{ book.description|default:'No description supplied for this book.' }}</p></div><a class="btn-light" href="{{ book.reading_file.url }}" target="_blank" rel="noopener"><i class="fa-solid fa-up-right-from-square"></i> Open file</a></div>{% if book.is_pdf %}<iframe class="book-reader" src="{{ book.reading_file.url }}" title="{{ book.title }}"></iframe>{% else %}<div class="empty-search">This EPUB file is ready to download or open in your preferred EPUB reader.<br><a class="btn-primary" href="{{ book.reading_file.url }}"><i class="fa-solid fa-download"></i> Download EPUB</a></div>{% endif %}</section>
+{% endblock %}
+

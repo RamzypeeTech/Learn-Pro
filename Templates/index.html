@@ -1,0 +1,286 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Learn Pro - Dashboard</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}" />
+  <!-- Font Awesome Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="primary-navigation">
+      <div class="brand">
+        <div class="logo-box">SP</div>
+        <span class="brand-name">Learn Pro</span>
+      </div>
+
+      <div class="sidebar-section-title">WORKSPACE</div>
+
+      <nav class="nav-menu">
+        <a href="#" class="nav-item active">
+          <span class="badge">DB</span>
+          <span class="label">Dashboard</span>
+        </a>
+        <a href="{% url 'academic_years' %}" class="nav-item">
+          <span class="badge">YR</span>
+          <span class="label">Academic Years</span>
+        </a>
+        <a href="{% url 'classes' %}" class="nav-item">
+          <span class="badge">CL</span>
+          <span class="label">Classes</span>
+        </a>
+        <a href="{% url 'teachers' %}" class="nav-item">
+          <span class="badge">TR</span>
+          <span class="label">Teachers</span>
+        </a>
+        <a href="{% url 'students' %}" class="nav-item">
+          <span class="badge">ST</span>
+          <span class="label">Students</span>
+        </a>
+        <a href="{% url 'subjects' %}" class="nav-item">
+          <span class="badge">SU</span>
+          <span class="label">Subjects</span>
+        </a>
+        <a href="{% url 'attendance' %}" class="nav-item">
+          <span class="badge">AT</span>
+          <span class="label">Attendance</span>
+        </a>
+        <a href="{% url 'exams_results' %}" class="nav-item">
+          <span class="badge">EX</span>
+          <span class="label">Exams & Results</span>
+        </a>
+        <a href="{% url 'assignments' %}" class="nav-item">
+          <span class="badge">AS</span>
+          <span class="label">Assignments</span>
+        </a>
+        <a href="{% url 'fees' %}" class="nav-item">
+          <span class="badge">FE</span>
+          <span class="label">Fees</span>
+        </a>
+        <a href="{% url 'financial_management' %}" class="nav-item">
+          <span class="badge">FM</span>
+          <span class="label">Financial Management</span>
+        </a>
+        <a href="{% url 'announcements' %}" class="nav-item"><span class="badge">AN</span><span class="label">Announcements</span></a>
+        <a href="{% url 'parents' %}" class="nav-item"><span class="badge">PR</span><span class="label">Parent Portal</span></a>
+        <a href="{% url 'messages' %}" class="nav-item"><span class="badge">MS</span><span class="label">Messages</span></a>
+        <a href="{% url 'timetable' %}" class="nav-item"><span class="badge">TT</span><span class="label">Timetable</span></a>
+        <a href="{% url 'transport' %}" class="nav-item"><span class="badge">TP</span><span class="label">Transport</span></a>
+        <a href="{% url 'library' %}" class="nav-item"><span class="badge">LB</span><span class="label">Library</span></a>
+        <a href="{% url 'hr_payroll' %}" class="nav-item"><span class="badge">HR</span><span class="label">HR & Payroll</span></a>
+        <a href="{% url 'system_settings' %}" class="nav-item"><span class="badge">SS</span><span class="label">System Settings</span></a>
+        <a href="{% url 'reports' %}" class="nav-item"><span class="badge">RP</span><span class="label">Reports</span></a>
+      </nav>
+
+      <div class="sidebar-footer">
+          <a class="user-avatar" href="{% url 'my_profile' %}" aria-label="Open my profile">{% if header_photo %}<img src="{{ header_photo.url }}" alt="">{% else %}{{ request.user.username|slice:':2'|upper }}{% endif %}</a>
+        <div class="user-info">
+          <div class="user-name">{{ request.user.get_full_name|default:request.user.username }}</div>
+          <div class="user-role">Super Admin</div>
+        </div>
+      </div>
+    </aside>
+    <div class="sidebar-backdrop" aria-hidden="true"></div>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Header Bar -->
+      <header class="top-header">
+        <button class="menu-toggle" type="button" aria-label="Open navigation" aria-controls="primary-navigation" aria-expanded="false"><i class="fa-solid fa-bars"></i></button>
+        <form class="search-box" action="{% url 'search' %}" method="get">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input type="text" name="q" placeholder="Search names, IDs, subjects" aria-label="Search records" />
+        </form>
+
+        <div class="header-actions">
+          <a class="notification-link" href="{% url 'notifications' %}" aria-label="Open notifications"><i class="fa-solid fa-bell"></i>{% if unread_notification_count %}<b>{{ unread_notification_count }}</b>{% endif %}</a>
+          <form class="dropdown-group" method="post" action="{% url 'set_academic_year' %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.path }}">
+            <span class="dropdown-label academic-year-label">Academic Year</span>
+            <select class="select-input" name="academic_year" onchange="this.form.submit()">
+              <option>2021-22</option>
+              <option>2022-23</option>
+              <option>2023-24</option>
+              <option>2024-25</option>
+              <option>2025-26</option>
+              <option>2026-27</option>
+            </select>
+          </form>
+          <a class="header-profile" href="{% url 'my_profile' %}" aria-label="Open my profile">{% if header_photo %}<img src="{{ header_photo.url }}" alt="">{% endif %}<span>{{ request.user.get_full_name|default:request.user.username }}</span></a>
+          <a class="btn-primary header-action-button" href="{% url 'change_password' %}">Change Password</a>
+          <form method="post" action="{% url 'sign_out' %}" class="inline-form">{% csrf_token %}<button class="btn-primary header-action-button" type="submit">Sign out</button></form>
+        </div>
+      </header>
+
+      <!-- Dashboard View -->
+      <div class="dashboard-body">
+        <div class="dashboard-header">
+          <div>
+            <span class="breadcrumb">Dashboard</span>
+            <span class="breadcrumb">Dashboard</span><h1 class="welcome-title">Welcome to Learn Pro, {{ request.user.first_name|default:request.user.username }}</h1>
+            <p class="welcome-sub">Here is a clear view of your school operations today.</p>
+          </div>
+          <a class="btn-primary" href="{% url 'classes' %}"><i class="fa-solid fa-plus"></i> Add New Class</a>
+        </div>
+
+        <!-- Metric Cards Grid -->
+        <div class="metrics-grid">
+          <!-- Total Students -->
+          <div class="metric-card card-blue">
+            <div class="metric-header">
+              <span>Total Students</span>
+              <div class="metric-icon"><i class="fa-solid fa-user-group"></i></div>
+            </div>
+            <div class="metric-value">{{ total_students }}</div>
+            <div class="metric-sub">Enrolled this year</div>
+          </div>
+
+          <!-- Total Teachers -->
+          <div class="metric-card card-purple">
+            <div class="metric-header">
+              <span>Total Teachers</span>
+              <div class="metric-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+            </div>
+            <div class="metric-value">{{ total_teachers }}</div>
+            <div class="metric-sub">Active faculty</div>
+          </div>
+
+          <!-- Total Classes -->
+          <div class="metric-card card-teal">
+            <div class="metric-header">
+              <span>Total Classes</span>
+              <div class="metric-icon"><i class="fa-solid fa-chalkboard"></i></div>
+            </div>
+            <div class="metric-value">{{ total_classes }}</div>
+            <div class="metric-sub">Active classes</div>
+          </div>
+
+          <!-- Today's Attendance -->
+          <div class="metric-card card-green">
+            <div class="metric-header">
+              <span>Today's Attendance</span>
+              <div class="metric-icon"><i class="fa-solid fa-calendar-check"></i></div>
+            </div>
+            <div class="metric-value">{% if attendance_percentage is not None %}{{ attendance_percentage }}%{% else %}—{% endif %}</div>
+            <div class="metric-sub">{{ attendance_total }} record{{ attendance_total|pluralize }} today</div>
+          </div>
+
+          <!-- Pending Fees -->
+          <div class="metric-card card-orange">
+            <div class="metric-header">
+              <span>Pending Fees</span>
+              <div class="metric-icon"><i class="fa-solid fa-receipt"></i></div>
+            </div>
+            <div class="metric-value">₦{{ pending_balance }}</div>
+            <div class="metric-sub">{{ pending_fee_count }} outstanding record{{ pending_fee_count|pluralize }}</div>
+          </div>
+
+          <!-- Upcoming Exams -->
+          <div class="metric-card card-red">
+            <div class="metric-header">
+              <span>Upcoming Exams</span>
+              <div class="metric-icon"><i class="fa-solid fa-clock"></i></div>
+            </div>
+            <div class="metric-value">{{ upcoming_events }}</div>
+            <div class="metric-sub">{% if next_event %}Next: {{ next_event.title }}{% else %}Schedule an event{% endif %}</div>
+          </div>
+        </div>
+
+        <section class="feature-section" aria-labelledby="features-heading">
+          <div class="section-heading"><div><span class="eyebrow">Learn Pro workspace</span><h2 id="features-heading">Everything you need to run your school</h2><p>Manage academic, people, learning, and finance operations from one secure place.</p></div></div>
+          <div class="feature-grid">
+            <a class="feature-card" href="{% url 'students' %}"><span class="feature-icon blue"><i class="fa-solid fa-user-graduate"></i></span><div><h3>Student Information</h3><p>Maintain student records, enrolment and class placement.</p><span>Manage students <i class="fa-solid fa-arrow-right"></i></span></div></a>
+            <a class="feature-card" href="{% url 'teachers' %}"><span class="feature-icon purple"><i class="fa-solid fa-chalkboard-user"></i></span><div><h3>Staff & Teachers</h3><p>Organise staff profiles, departments and teaching assignments.</p><span>Manage teachers <i class="fa-solid fa-arrow-right"></i></span></div></a>
+            <a class="feature-card" href="{% url 'attendance' %}"><span class="feature-icon green"><i class="fa-solid fa-calendar-check"></i></span><div><h3>Attendance</h3><p>Record daily attendance and follow up on absences.</p><span>Track attendance <i class="fa-solid fa-arrow-right"></i></span></div></a>
+            <a class="feature-card" href="{% url 'exams_results' %}"><span class="feature-icon orange"><i class="fa-solid fa-square-poll-vertical"></i></span><div><h3>Exams & Results</h3><p>Schedule assessments, enter marks and publish results.</p><span>View assessments <i class="fa-solid fa-arrow-right"></i></span></div></a>
+            <a class="feature-card" href="{% url 'assignments' %}"><span class="feature-icon teal"><i class="fa-solid fa-book-open"></i></span><div><h3>Learning & Assignments</h3><p>Create coursework and monitor submissions across classes.</p><span>Open assignments <i class="fa-solid fa-arrow-right"></i></span></div></a>
+            <a class="feature-card" href="{% url 'fees' %}"><span class="feature-icon red"><i class="fa-solid fa-wallet"></i></span><div><h3>Fees & Finance</h3><p>Issue invoices, record payments and monitor balances.</p><span>Manage fees <i class="fa-solid fa-arrow-right"></i></span></div></a>
+          </div>
+        </section>
+
+        <!-- Lower Section (Charts & Stats) -->
+        <div class="content-grid">
+          <!-- Attendance Trend -->
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Attendance Trend</h2>
+                <div class="panel-subtitle">Latest relevant recorded school days</div>
+              </div>
+              <div class="panel-stat">{% if attendance_percentage is not None %}{{ attendance_percentage }}%{% else %}—{% endif %}</div>
+            </div>
+            <div class="bar-chart">
+              {% for day in attendance_days %}<div class="chart-col"><div class="bar" style="height: {{ day.percentage }}%;" title="{{ day.label }}: {{ day.percentage }}%"></div><small>{{ day.label }}</small></div>{% endfor %}
+            </div>
+          </div>
+
+          <!-- Fee Collection -->
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Fee Collection</h2>
+                <div class="panel-subtitle">Academic year payment position</div>
+              </div>
+            </div>
+            <div class="donut-section">
+              <div class="donut-chart" style="background: conic-gradient(#16a34a 0% {{ fee_collection_percentage }}%, #ea580c {{ fee_collection_percentage }}% 100%);">
+                <span class="donut-label">{{ fee_collection_percentage }}%<br/><small>Collected</small></span>
+              </div>
+              <div class="fee-legend">
+                <div class="legend-item">
+                  <span class="dot green"></span>
+                  <div>
+                    <div class="legend-title">Collected</div>
+                    <div class="legend-value">₦{{ fee_collected }}</div>
+                  </div>
+                </div>
+                <div class="legend-item">
+                  <span class="dot orange"></span>
+                  <div>
+                    <div class="legend-title">Overdue</div>
+                    <div class="legend-value">₦{{ pending_balance }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Grade Distribution -->
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Grade Distribution</h2>
+                <div class="panel-subtitle">Average scores across {{ graded_students }} graded student{{ graded_students|pluralize }}</div>
+              </div>
+            </div>
+            <div class="grade-list">
+              {% for grade in grade_distribution %}<div class="grade-row"><span class="grade-name">{{ grade.label }}</span><div class="progress-bar-bg"><div class="progress-fill" style="width: {{ grade.percentage }}%;"></div></div><span class="grade-count">{{ grade.count }}</span></div>{% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer class="site-footer">© 2026 Created by Prince Chiagoziem Okereke</footer>
+    </main>
+  </div>
+  <script>
+    const menuButton = document.querySelector('.menu-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    const backdrop = document.querySelector('.sidebar-backdrop');
+    const closeNavigation = () => { sidebar?.classList.remove('is-open'); backdrop?.classList.remove('is-visible'); menuButton?.setAttribute('aria-expanded', 'false'); };
+    menuButton?.addEventListener('click', function () {
+      const isOpen = sidebar.classList.toggle('is-open');
+      backdrop?.classList.toggle('is-visible', isOpen);
+      this.setAttribute('aria-expanded', isOpen);
+    });
+    backdrop?.addEventListener('click', closeNavigation);
+    window.addEventListener('resize', () => { if (window.innerWidth > 900) closeNavigation(); });
+  </script>
+</body>
+</html>
+

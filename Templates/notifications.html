@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block title %}Notifications | Learn Pro{% endblock %}
+{% block content %}
+<div class="page-heading"><div><span class="breadcrumb">Updates</span><h1>Notifications</h1><p>New results, timetables, announcements, and other school updates appear here.</p></div></div>
+<section class="panel notification-list">{% for notification in notifications %}<a class="notification-item" href="{{ notification.url|default:'#' }}"><span class="notification-icon"><i class="fa-solid fa-bell"></i></span><span><b>{{ notification.title }}</b><p>{{ notification.message }}</p><small>{{ notification.created_at|date:'M j, Y · H:i' }}</small></span></a>{% empty %}<div class="empty-notice"><i class="fa-regular fa-bell"></i><h2>You are up to date</h2><p>New site posts will show here.</p></div>{% endfor %}</section>
+{% endblock %}

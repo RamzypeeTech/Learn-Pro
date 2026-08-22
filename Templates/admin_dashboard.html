@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard | Learn Pro{% endblock %}
+{% block content %}
+<div class="page-heading"><div><span class="breadcrumb">Workspace overview</span><h1>Admin dashboard</h1><p>Monitor the activity, records, and growth across your school workspace.</p></div></div>
+<section class="admin-metrics">
+  <article class="admin-metric"><i class="fa-solid fa-users"></i><span><b>{{ total_users }}</b>Registered accounts</span></article>
+  <a class="admin-metric" href="{% url 'students' %}"><i class="fa-solid fa-user-graduate"></i><span><b>{{ total_students }}</b>Students</span></a>
+  <a class="admin-metric" href="{% url 'teachers' %}"><i class="fa-solid fa-chalkboard-user"></i><span><b>{{ total_teachers }}</b>Teachers</span></a>
+  <a class="admin-metric" href="{% url 'classes' %}"><i class="fa-solid fa-school"></i><span><b>{{ total_classes }}</b>Classes</span></a>
+  <a class="admin-metric" href="{% url 'parents' %}"><i class="fa-solid fa-people-roof"></i><span><b>{{ total_parents }}</b>Parents</span></a>
+  <a class="admin-metric" href="{% url 'attendance' %}"><i class="fa-solid fa-calendar-check"></i><span><b>{{ total_attendance }}</b>Attendance entries</span></a>
+  <a class="admin-metric" href="{% url 'results' %}"><i class="fa-solid fa-square-poll-vertical"></i><span><b>{{ total_results }}</b>Results</span></a>
+  <a class="admin-metric" href="{% url 'assignments' %}"><i class="fa-solid fa-book-open"></i><span><b>{{ total_assignments }}</b>Assignments</span></a>
+  <a class="admin-metric" href="{% url 'announcements' %}"><i class="fa-solid fa-bullhorn"></i><span><b>{{ total_announcements }}</b>Announcements</span></a>
+</section>
+<section class="admin-dashboard-grid">
+<section class="panel activity-panel"><div class="panel-header"><div><h2>Recent site activity</h2><p>Latest records created in this school workspace.</p></div></div><div class="activity-list">{% for happened_at, action, detail, destination in recent_activity %}<a class="activity-item" href="{% url destination %}"><span class="activity-dot"></span><span><b>{{ action }}</b><small>{{ detail }}</small></span><time>{{ happened_at|date:'M j, Y · H:i' }}</time></a>{% empty %}<p class="muted-copy">No activity has been recorded yet.</p>{% endfor %}</div></section>
+<section class="panel login-panel"><div class="panel-header"><div><h2>People who logged in</h2><p>Latest account sign-ins across the site.</p></div></div><div class="activity-list">{% for login in recent_logins %}<div class="activity-item"><span class="activity-dot success"></span><span><b>{{ login.user.get_full_name|default:login.user.username }}</b><small>{{ login.user.email|default:'No email address' }}{% if login.ip_address %} · {{ login.ip_address }}{% endif %}</small></span><time>{{ login.signed_in_at|date:'M j, Y · H:i' }}</time></div>{% empty %}<p class="muted-copy">No one has logged in yet.</p>{% endfor %}</div></section>
+</section>
+{% endblock %}

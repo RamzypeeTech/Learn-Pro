@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}{{ person.full_name }} | Learn Pro{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div><span class="breadcrumb">{{ person_type }} directory</span><h1>{{ person.full_name }}</h1><p>{{ person_type }} profile and school record.</p></div>
+  <a class="btn-light" href="{% url back_url %}"><i class="fa-solid fa-arrow-left"></i> Back to {{ person_type|lower }}s</a>
+</div>
+{% if messages %}{% for message in messages %}<div class="message-success">{{ message }}</div>{% endfor %}{% endif %}
+<section class="profile-hero panel">
+  <div class="profile-photo-large">{% if person.profile_photo %}<img src="{{ person.profile_photo.url }}" alt="{{ person.full_name }}">{% else %}<span>{{ person.full_name|slice:':1'|upper }}</span>{% endif %}</div>
+  <div class="profile-hero-copy"><span class="eyebrow">{{ person_type }}</span><h2>{{ person.full_name }}</h2><p>{% if person_type == 'Student' %}{{ person.student_id }} · {{ person.school_class }}{% else %}{{ person.employee_id }}{% if person.job_title %} · {{ person.job_title }}{% endif %}{% endif %}</p></div>
+  <form class="photo-update-form" method="post" action="{{ photo_update_url }}" enctype="multipart/form-data">{% csrf_token %}<label class="btn-light" for="{{ photo_form.profile_photo.id_for_label }}"><i class="fa-solid fa-camera"></i> Update photo</label>{{ photo_form.profile_photo }}</form>
+</section>
+{% if person_type == 'Student' %}
+  <div class="stats-row">
+    <div class="mini-stat success"><i class="fa-solid fa-chart-line"></i><span><b>{% if grade_average %}{{ grade_average|floatformat:1 }}%{% else %}—{% endif %}</b> Academic average</span></div>
+    <div class="mini-stat"><i class="fa-solid fa-calendar-check"></i><span><b>{% if attendance_percentage is not None %}{{ attendance_percentage }}%{% else %}—{% endif %}</b> Attendance</span></div>
+    <div class="mini-stat danger"><i class="fa-solid fa-wallet"></i><span><b>₦{{ fee_balance }}</b> Outstanding fees</span></div>
+  </div>
+  <div class="profile-details-grid">
+    <section class="panel"><h2>Student details</h2><dl class="detail-list"><dt>Student ID</dt><dd>{{ person.student_id }}</dd><dt>Class & section</dt><dd>{{ person.school_class }}</dd><dt>Enrolled</dt><dd>{{ person.enrollment_date }}</dd><dt>Date of birth</dt><dd>{{ person.date_of_birth|default:'—' }}</dd><dt>Email</dt><dd>{{ person.email|default:'—' }}</dd></dl></section>
+    <section class="panel"><h2>Guardian details</h2><dl class="detail-list"><dt>Guardian name</dt><dd>{{ person.guardian_name|default:'—' }}</dd><dt>Guardian phone</dt><dd>{{ person.guardian_phone|default:'—' }}</dd></dl></section>
+  </div>
+{% else %}
+  <div class="profile-details-grid">
+    <section class="panel"><h2>Teacher details</h2><dl class="detail-list"><dt>Employee ID</dt><dd>{{ person.employee_id }}</dd><dt>Department</dt><dd>{{ person.department|default:'—' }}</dd><dt>Role</dt><dd>{{ person.job_title|default:'—' }}</dd><dt>Email</dt><dd>{{ person.email|default:'—' }}</dd><dt>Phone</dt><dd>{{ person.phone|default:'—' }}</dd></dl></section>
+    <section class="panel"><h2>Assigned subjects</h2>{% for subject in subjects %}<div class="subject-row"><b>{{ subject.name }}</b><span>{{ subject.code }}{% if subject.school_class %} · {{ subject.school_class }}{% endif %}</span></div>{% empty %}<p class="muted-copy">No subjects have been assigned yet.</p>{% endfor %}</section>
+  </div>
+{% endif %}
+<script>
+  document.querySelector('.photo-update-form input[type="file"]')?.addEventListener('change', function () {
+    if (this.files.length) this.form.submit();
+  });
+</script>
+{% endblock %}
+

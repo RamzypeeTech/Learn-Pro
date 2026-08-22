@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}
+  Search | Learn Pro
+{% endblock %}
+{% block content %}
+  <div class="page-heading">
+    <div>
+      <span class="breadcrumb">Search</span><h1>Search results</h1><p>
+        {% if query %}
+          Results for “{{ query }}”
+        {% else %}
+          Enter a name, ID, subject, assignment, or transaction above.
+        {% endif %}
+      </p>
+    </div>
+  </div>
+  <section class="panel search-results">
+    {% if query and results %}
+      {% for result in results %}
+        <a href="{{ result.url }}" class="search-result"><span class="subject-tag">{{ result.type }}</span><span><b>{{ result.name }}</b><small>{{ result.detail }}</small></span><i class="fa-solid fa-arrow-right"></i></a>
+      {% endfor %}
+    {% elif query %}
+      <p class="empty-search">No records match “{{ query }}”.</p>
+    {% else %}
+      <p class="empty-search">Use the search box to find records in your school workspace.</p>
+    {% endif %}
+  </section>
+{% endblock %}
+

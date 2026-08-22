@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create account | Learn Pro</title><link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body class="auth-page">
+  <main class="auth-card auth-card-wide">
+    <div class="auth-brand"><span class="logo-box">SP</span><span class="brand-name" style="color:#0f172a">Learn Pro</span></div>
+    <h1>Create your account</h1><p>Set up your secure Learn Pro workspace access.</p>
+    {% if form.non_field_errors %}<div class="auth-errors">{% for error in form.non_field_errors %}{{ error }}{% endfor %}</div>{% endif %}
+    <form method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      <div class="auth-name-row">
+        <div class="auth-field"><label for="id_first_name">First name</label><input id="id_first_name" name="first_name" value="{{ form.first_name.value|default:'' }}" autocomplete="given-name" required>{% for error in form.first_name.errors %}<small class="auth-help">{{ error }}</small>{% endfor %}</div>
+        <div class="auth-field"><label for="id_last_name">Last name</label><input id="id_last_name" name="last_name" value="{{ form.last_name.value|default:'' }}" autocomplete="family-name" required>{% for error in form.last_name.errors %}<small class="auth-help">{{ error }}</small>{% endfor %}</div>
+      </div>
+      <div class="auth-field"><label for="id_username">Username</label><input id="id_username" name="username" value="{{ form.username.value|default:'' }}" autocomplete="username" required>{% for error in form.username.errors %}<small class="auth-help">{{ error }}</small>{% endfor %}</div>
+      <div class="auth-field"><label for="id_email">Work email</label><input id="id_email" name="email" type="email" value="{{ form.email.value|default:'' }}" autocomplete="email" required>{% for error in form.email.errors %}<small class="auth-help">{{ error }}</small>{% endfor %}</div>
+      <div class="auth-field"><label for="id_role">I am registering as</label>{{ form.role }}{% for error in form.role.errors %}<small class="auth-help auth-help-error">{{ error }}</small>{% endfor %}</div>
+      <div class="auth-field"><label for="id_profile_photo">Profile photo <span class="optional-text">(optional)</span></label>{{ form.profile_photo }}<small class="auth-help">JPG, PNG, or WebP; maximum 5 MB.</small>{% for error in form.profile_photo.errors %}<small class="auth-help auth-help-error">{{ error }}</small>{% endfor %}</div>
+      <div class="auth-field"><label for="id_password1">Password</label><input id="id_password1" name="password1" type="password" autocomplete="new-password" required><small class="auth-help">Use at least 8 characters and avoid common passwords.</small>{% for error in form.password1.errors %}<small class="auth-help">{{ error }}</small>{% endfor %}</div>
+      <div class="auth-field"><label for="id_password2">Confirm password</label><input id="id_password2" name="password2" type="password" autocomplete="new-password" required>{% for error in form.password2.errors %}<small class="auth-help">{{ error }}</small>{% endfor %}</div>
+      <label class="auth-check"><input type="checkbox" name="accept_terms" {% if form.accept_terms.value %}checked{% endif %} required> <span>I agree to the Terms and Conditions and Privacy Policy.</span></label>
+      {% for error in form.accept_terms.errors %}<small class="auth-help auth-help-error">{{ error }}</small>{% endfor %}
+      <button class="btn-primary auth-submit" type="submit">Create account</button>
+    </form>
+    <p class="auth-switch">Already have an account? <a href="{% url 'sign_in' %}">Sign in</a></p>
+  </main>
+</body>
+</html>
+
