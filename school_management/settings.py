@@ -29,6 +29,12 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://learn-pro.onrender.com',
+    'https://*.onrender.com',
+]
+
+
 # Application definition
 
 INSTALLED_APPS = [
